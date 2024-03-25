@@ -1,0 +1,27 @@
+[build.environment]
+  NPM_FLAGS = "--version"
+  NODE_VERSION = "20"
+
+[build]
+  publish = "dist"
+  command = "pnpm run build"
+  # for spa and ssg
+  # command = "pnpm run generate"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    cache-control = '''
+    max-age=31536000,
+    immutable
+    '''

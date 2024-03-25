@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "antfu.goto-alias",
+    "vunguyentuan.vscode-postcss",
+    "dbaeumer.vscode-eslint",
+    "vue.volar",
+    "Nuxtr.nuxtr-vscode",
+    "yoavbls.pretty-ts-errors",
+    "bradlc.vscode-tailwindcss",
+    "steoates.autoimport",
+    "heybourn.headwind"
+  ]
+}
