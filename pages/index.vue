@@ -1,8 +1,237 @@
+<!-- eslint-disable ts/no-use-before-define -->
 <script setup lang="ts">
-const config = useRuntimeConfig()
-const whatEnv = config.public.WHAT_ENV
+import { onKeyStroke } from '@vueuse/core'
+import HD2Sequences from '~/assets/HD2-Sequences'
+import type { GroupStratagemsList, HD2StratagemsData, SequencesData, Stage, StratagemsData } from '~/types/common'
+
+const stratagems = ref<StratagemsData[]>(buildStratagemList(HD2Sequences))
+const stratagemsPlayable = ref<StratagemsData[]>([])
+
+function buildStratagemList(_HD2Sequences: HD2StratagemsData[]): StratagemsData[] {
+  const newData = _HD2Sequences.map((m, i) => {
+    return {
+      ...m,
+      isActive: false,
+    }
+  }) as unknown as StratagemsData[]
+  return newData
+}
+
+const generalStratagems = computed(() => stratagems.value.filter(f => f.groupId === 'general_stratagems'))
+const patrioticStratagems = computed(() => stratagems.value.filter(f => f.groupId === 'patriotic_administration_center'))
+const orbitalStratagems = computed(() => stratagems.value.filter(f => f.groupId === 'orbital_cannons'))
+const hangarStratagems = computed(() => stratagems.value.filter(f => f.groupId === 'hangar'))
+const bridgeStratagems = computed(() => stratagems.value.filter(f => f.groupId === 'bridge'))
+const engineeringStratagems = computed(() => stratagems.value.filter(f => f.groupId === 'engineering_bay'))
+const roboticsStratagems = computed(() => stratagems.value.filter(f => f.groupId === 'robotics_workshop'))
+
+const groupStratagems = ref<GroupStratagemsList[]>(buildGroupStratagemsList())
+
+function buildGroupStratagemsList(): GroupStratagemsList[] {
+  return [
+    {
+      group: 'General Stratagems',
+      groupId: 'general_stratagems',
+      stratagems: generalStratagems.value,
+    },
+    {
+      group: 'Patriotic Administration Center',
+      groupId: 'patriotic_administration_center',
+      stratagems: patrioticStratagems.value,
+    },
+    {
+      group: 'Orbital Cannons',
+      groupId: 'orbital_cannons',
+      stratagems: orbitalStratagems.value,
+    },
+    {
+      group: 'Hangar',
+      groupId: 'hangar',
+      stratagems: hangarStratagems.value,
+    },
+    {
+      group: 'Bridge',
+      groupId: 'bridge',
+      stratagems: bridgeStratagems.value,
+    },
+    {
+      group: 'Engineering Bay',
+      groupId: 'engineering_bay',
+      stratagems: engineeringStratagems.value,
+    },
+    {
+      group: 'Robotics Workshop',
+      groupId: 'robotics_workshop',
+      stratagems: roboticsStratagems.value,
+    },
+  ]
+}
+
+const selectedStratagem = ref<StratagemsData[]>([])
+function toggleStratagem(stratagem: StratagemsData) {
+  stratagem.isActive = !stratagem.isActive
+  if (selectedStratagem.value.filter(f => f.id === stratagem.id).length > 0) {
+    selectedStratagem.value = selectedStratagem.value.filter(f => f.id !== stratagem.id)
+  }
+  else {
+    selectedStratagem.value = [...selectedStratagem.value, stratagem]
+  }
+  stratagemsPlayable.value = selectedStratagem.value
+
+  setupStage()
+}
+
+function clearStratagemPlay() {
+  stratagemsPlayable.value = stratagemsPlayable.value.slice(1)
+}
+
+function clearAllStratagems() {
+  selectedStratagem.value = []
+  stratagemsPlayable.value = []
+  currentKeyList.value = []
+  stage.value = 'setup'
+
+  const copyArr = JSON.parse(JSON.stringify(buildStratagemList(HD2Sequences)))
+  stratagems.value = copyArr
+  groupStratagems.value = buildGroupStratagemsList()
+}
+
+// on start training
+const currentMove = ref<string>('')
+// const currentStratagemMoveIndex = ref<number>(0)
+const currentKeyMoveIndex = ref<number>(0)
+const currentKeyList = ref<SequencesData[]>([])
+const stage = ref<Stage>('setup')
+const arrowBinding = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft']
+const keyBinding = ref({
+  up: 'KeyW',
+  down: 'KeyS',
+  left: 'KeyA',
+  right: 'KeyD',
+})
+const pressAudioRef = ref<HTMLAudioElement | null>(null)
+const finishAudioRef = ref<HTMLAudioElement | null>(null)
+
+function mapKeyStore(key: string) {
+  const isArrow = arrowBinding.includes(key)
+  const template = {
+    U: isArrow ? 'ArrowUp' : keyBinding.value.up,
+    D: isArrow ? 'ArrowDown' : keyBinding.value.down,
+    L: isArrow ? 'ArrowLeft' : keyBinding.value.left,
+    R: isArrow ? 'ArrowRight' : keyBinding.value.right,
+  } as { [x: string]: string }
+  return template[key] || key
+}
+
+onKeyStroke((e) => {
+  e.preventDefault()
+  if (![keyBinding.value.up, keyBinding.value.down, keyBinding.value.left, keyBinding.value.right, 'ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'].includes(e.code)) {
+    return
+  }
+  // console.log(e)
+  if (stratagemsPlayable.value.length <= 0) {
+    return
+  }
+
+  const key = currentKeyList.value[currentKeyMoveIndex.value]
+  const isMatch = key.keyName === e.code
+
+  if (!isMatch) {
+    currentKeyMoveIndex.value = 0
+    currentKeyList.value = currentKeyList.value.map(k => ({ ...k, keyState: 'default' }))
+    return
+  }
+
+  currentMove.value = e.code
+  key.keyState = 'active'
+  if (pressAudioRef.value) {
+    pressAudioRef.value.currentTime = 0
+    pressAudioRef.value.play()
+  }
+
+  if (currentKeyMoveIndex.value === currentKeyList.value.length - 1) {
+    stratagemsPlayable.value.shift()
+    currentKeyMoveIndex.value = 0
+
+    if (finishAudioRef.value) {
+      finishAudioRef.value.currentTime = 0
+      finishAudioRef.value.play()
+    }
+
+    if (stratagemsPlayable.value.length < 1) {
+      clearAllStratagems()
+
+      // alert('Training Complete!')
+    }
+    const firstStratagemsPlayable = stratagemsPlayable.value.length > 0 && stratagemsPlayable.value.at(0)
+    if (firstStratagemsPlayable) {
+      currentKeyList.value = firstStratagemsPlayable.sequence.split('').map((k, i) => ({
+        id: i,
+        keyName: mapKeyStore(k),
+        keyState: 'default',
+      }))
+    }
+  }
+  else {
+    currentKeyMoveIndex.value++
+  }
+})
+
+function resetStage() {
+  currentKeyMoveIndex.value = 0
+  currentKeyList.value = []
+}
+function setupStage() {
+  resetStage()
+  currentKeyList.value = stratagemsPlayable.value[0].sequence.split('').map((m, i) => {
+    return {
+      id: i,
+      keyName: mapKeyStore(m),
+      keyState: 'default',
+    }
+  })
+}
 </script>
 
 <template>
-  <div />
+  <div class="stage flex">
+    <div class="w-[356px] h-dvh overflow-auto flex flex-col gap-4">
+      <button @click="clearAllStratagems()">
+        Clear
+      </button>
+      <div v-for="group in groupStratagems" :key="group.groupId">
+        <h1 class="font-bold text-xl ml-2">
+          {{ group.group }}
+        </h1>
+        <div class="grid gap-0 gap-y-2 grid-cols-4 justify-center items-center justify-items-center w-full mt-2">
+          <StratagemIcon
+            v-for="stratagem in group.stratagems" :key="stratagem.name"
+            width="64px"
+            height="64px"
+            :icon-name="stratagem.image"
+            class="transition-all trasnitionanimation-duration-150 cursor-pointer" :class="[stratagem.isActive ? 'outline outline-2' : '']"
+            @click="toggleStratagem(stratagem)"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="flex-1 flex flex-col justify-center items-center">
+      <div class="w-full flex justify-center">
+        <StratagemIcon
+          v-for="stratagem in stratagemsPlayable" :key="stratagem.name"
+          :icon-name="stratagem.image" width="150px"
+          height="auto"
+        />
+      </div>
+      <div class="w-full flex justify-center">
+        <!-- <button @click="clearStratagemPlay()">
+          clearStratagemPlay
+        </button> -->
+        <ArrowJoystick :movement-list-setup="currentKeyList" :key-binding="keyBinding" />
+        <audio v-show="false" ref="pressAudioRef" src="/data/Sounds/press.mp3" />
+        <audio v-show="false" ref="finishAudioRef" src="/data/Sounds/finishMove.mp3" />
+      </div>
+      <!-- <ArrowJoystick movement-list-setup="URLD" /> -->
+    </div>
+  </div>
 </template>

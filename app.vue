@@ -3,14 +3,16 @@ useHead({
   title: 'Nuxt 3 Vitesse DKKs',
   link: [
     {
-      rel: 'icon', type: 'image/png', href: '/nuxt.png',
+      rel: 'icon',
+      type: 'image/png',
+      href: '/nuxt.png',
     },
   ],
 })
 </script>
 
 <template>
-  <div>
+  <div id="app">
     <NuxtLoadingIndicator />
     <NuxtLayout>
       <NuxtPage />
@@ -20,13 +22,17 @@ useHead({
 
 <style>
 html, body , #__nuxt{
-  height: 100vh;
   margin: 0;
   padding: 0;
+  height: 100%;
+}
+
+#app, main {
+  height: inherit;
 }
 
 html.dark {
-  background: #222;
+  background: var(--background-color);
   color: white;
 }
 </style>

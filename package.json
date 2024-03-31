@@ -1,5 +1,5 @@
 {
-  "name": "nuxt3-vitesse-dkks",
+  "name": "stratagem-dojo",
   "type": "module",
   "private": true,
   "packageManager": "pnpm@8.5.1",
@@ -15,8 +15,8 @@
     "generate": "nuxi generate"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^2.9.0",
-    "@nuxt/devtools": "^1.1.3",
+    "@antfu/eslint-config": "^2.11.0",
+    "@nuxt/devtools": "^1.1.4",
     "@nuxtjs/color-mode": "^3.3.3",
     "@nuxtjs/i18n": "8.2.0",
     "@pinia/nuxt": "^0.5.1",

@@ -1,4 +1,7 @@
+import process from 'node:process'
+
 export default defineNuxtConfig({
+  ssr: false,
   app: {
     head: {
       viewport: 'width=device-width,initial-scale=1',
@@ -14,11 +17,6 @@ export default defineNuxtConfig({
       options: {
         target: 'esnext',
       },
-    },
-    prerender: {
-      crawlLinks: false,
-      routes: ['/'],
-      ignore: ['/hi'],
     },
   },
 
@@ -39,7 +37,7 @@ export default defineNuxtConfig({
   // i18n support
   // comment if you don't want to use i18n.
   i18n: {
-    vueI18n: './i18n.config.ts' 
+    vueI18n: './i18n.config.ts',
   },
 
   imports: {
@@ -60,18 +58,18 @@ export default defineNuxtConfig({
 
   typescript: {
     tsConfig: {
-      include: ['./types/**/*.d.ts'],
+      include: ['../types/**/*.d.ts'],
     },
-    shim: false
+    shim: false,
   },
 
   devtools: {
-    enabled: true
+    enabled: true,
   },
 
   runtimeConfig: {
     public: {
-      WHAT_ENV: process.env.WHAT_ENV || 'env_dev'
-    }
-  }
+      WHAT_ENV: process.env.WHAT_ENV || 'env_dev',
+    },
+  },
 })

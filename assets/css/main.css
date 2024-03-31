@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer custom-global {
+    :root {
+        --primary-color: #FFE900;
+        --red-color: #CF5E4E;
+        --yellow-color: #C8B36B;
+        --background-color: #000000;
+    }
+
+}
