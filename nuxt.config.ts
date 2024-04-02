@@ -2,7 +2,9 @@ import process from 'node:process'
 
 export default defineNuxtConfig({
   ssr: false,
+
   app: {
+    baseURL: '/stratagemdojo',
     head: {
       viewport: 'width=device-width,initial-scale=1',
       meta: [
