@@ -4,11 +4,14 @@ import { onKeyStroke } from '@vueuse/core'
 import HD2Sequences from '~/assets/HD2-Sequences'
 import type { GroupStratagemsList, HD2StratagemsData, SequencesData, Stage, StratagemsData } from '~/types/common'
 
+const runtimeConfig = useRuntimeConfig()
+const baseURL = runtimeConfig.app.baseURL
+
 const stratagems = ref<StratagemsData[]>(buildStratagemList(HD2Sequences))
 const stratagemsPlayable = ref<StratagemsData[]>([])
 
 function buildStratagemList(_HD2Sequences: HD2StratagemsData[]): StratagemsData[] {
-  const newData = _HD2Sequences.map((m, i) => {
+  const newData = _HD2Sequences.map((m, _i) => {
     return {
       ...m,
       isActive: false,
@@ -231,6 +234,7 @@ function endMeasureStat() {
             width="64px"
             height="64px"
             :icon-name="stratagem.image"
+            :root-icon="`${baseURL}/data/images/Stratagem_Icons/`"
             class="transition-all trasnitionanimation-duration-150 cursor-pointer" :class="[stratagem.isActive ? 'outline outline-2' : '']"
             @click="toggleStratagem(stratagem)"
           />
@@ -243,6 +247,7 @@ function endMeasureStat() {
         <StratagemIcon
           v-for="stratagem in stratagemsPlayable" :key="stratagem.name"
           :icon-name="stratagem.image" width="150px"
+          :root-icon="`${baseURL}/data/images/Stratagem_Icons/`"
           class="first:ring-offset-2 first:ring-2 first:ring-primary first:border-primary transition-all trasnitionanimation-duration-150"
           height="auto"
         />
@@ -255,11 +260,11 @@ function endMeasureStat() {
           clearStratagemPlay
         </button> -->
         <ArrowJoystick :movement-list-setup="currentKeyList" :key-binding="keyBinding" />
-        <audio v-show="false" ref="pressAudioRef" src="/data/Sounds/press.mp3" />
-        <audio v-show="false" ref="finishAudioRef" src="/data/Sounds/finishMove.mp3" />
+        <audio v-show="false" ref="pressAudioRef" :src="`${baseURL}/data/Sounds/press.mp3`" />
+        <audio v-show="false" ref="finishAudioRef" :src="`${baseURL}/data/Sounds/finishMove.mp3`" />
       </div>
       <div class="w-full h-10 bg-primary mt-4" />
-      <button v-if="colectionMeasureTime && colectionMeasureTime.length > 0">
+      <button v-if="colectionMeasureTime && colectionMeasureTime.length > 0" @click="colectionMeasureTime = []">
         X Clear
       </button>
       <div class="w-[400px] h-[260px] overflow-auto mt-4">
