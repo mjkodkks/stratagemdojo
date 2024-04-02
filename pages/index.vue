@@ -81,9 +81,7 @@ function toggleStratagem(stratagem: StratagemsData) {
   setupStage()
 }
 
-function clearStratagemPlay() {
-  stratagemsPlayable.value = stratagemsPlayable.value.slice(1)
-}
+const firstSelectedStratageName = computed(() => stratagemsPlayable.value.length > 0 && stratagemsPlayable.value[0]?.name || '')
 
 function clearAllStratagems() {
   selectedStratagem.value = []
@@ -102,7 +100,7 @@ const currentMove = ref<string>('')
 const currentKeyMoveIndex = ref<number>(0)
 const currentKeyList = ref<SequencesData[]>([])
 const stage = ref<Stage>('setup')
-const arrowBinding = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft']
+const arrowBinding = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
 const keyBinding = ref({
   up: 'KeyW',
   down: 'KeyS',
@@ -115,17 +113,17 @@ const finishAudioRef = ref<HTMLAudioElement | null>(null)
 function mapKeyStore(key: string) {
   const isArrow = arrowBinding.includes(key)
   const template = {
-    U: isArrow ? 'ArrowUp' : keyBinding.value.up,
-    D: isArrow ? 'ArrowDown' : keyBinding.value.down,
-    L: isArrow ? 'ArrowLeft' : keyBinding.value.left,
-    R: isArrow ? 'ArrowRight' : keyBinding.value.right,
+    U: isArrow ? arrowBinding[0] : keyBinding.value.up,
+    D: isArrow ? arrowBinding[1] : keyBinding.value.down,
+    L: isArrow ? arrowBinding[2] : keyBinding.value.left,
+    R: isArrow ? arrowBinding[3] : keyBinding.value.right,
   } as { [x: string]: string }
   return template[key] || key
 }
 
 onKeyStroke((e) => {
   e.preventDefault()
-  if (![keyBinding.value.up, keyBinding.value.down, keyBinding.value.left, keyBinding.value.right, 'ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'].includes(e.code)) {
+  if (![keyBinding.value.up, keyBinding.value.down, keyBinding.value.left, keyBinding.value.right, arrowBinding[0], arrowBinding[1], arrowBinding[2], arrowBinding[3]].includes(e.code)) {
     return
   }
   // console.log(e)
@@ -142,6 +140,8 @@ onKeyStroke((e) => {
     return
   }
 
+  startMeasureStat()
+
   currentMove.value = e.code
   key.keyState = 'active'
   if (pressAudioRef.value) {
@@ -150,6 +150,7 @@ onKeyStroke((e) => {
   }
 
   if (currentKeyMoveIndex.value === currentKeyList.value.length - 1) {
+    endMeasureStat()
     stratagemsPlayable.value.shift()
     currentKeyMoveIndex.value = 0
 
@@ -191,6 +192,27 @@ function setupStage() {
     }
   })
 }
+
+const startMark = ref(0)
+const endMark = ref(0)
+const colectionMeasureTime = ref<{ stratagemName: string, time: number, createdAt: string }[]>([])
+function startMeasureStat() {
+  if (startMark.value === 0) {
+    startMark.value = new Date().getTime()
+  }
+}
+
+function endMeasureStat() {
+  endMark.value = new Date().getTime()
+  const template = {
+    stratagemName: stratagemsPlayable.value[0].name,
+    time: (endMark.value - startMark.value) / 1000,
+    createdAt: new Date().toLocaleString(),
+  }
+  colectionMeasureTime.value = [...colectionMeasureTime.value, template]
+  startMark.value = 0
+  endMark.value = 0
+}
 </script>
 
 <template>
@@ -215,15 +237,20 @@ function setupStage() {
         </div>
       </div>
     </div>
-    <div class="flex-1 flex flex-col justify-center items-center">
-      <div class="w-full flex justify-center">
+    <div class="flex-1 flex flex-col justify-center items-center relative">
+      <InfoBar class="absolute right-4 top-4" />
+      <TransitionGroup name="list" tag="div" class="w-full flex justify-center min-h-[150px] gap-4">
         <StratagemIcon
           v-for="stratagem in stratagemsPlayable" :key="stratagem.name"
           :icon-name="stratagem.image" width="150px"
+          class="first:ring-offset-2 first:ring-2 first:ring-primary first:border-primary transition-all trasnitionanimation-duration-150"
           height="auto"
         />
+      </TransitionGroup>
+      <div class="w-full h-10 bg-primary mt-4 flex justify-center items-center">
+        <span class="text-2xl text-black font-bold">{{ firstSelectedStratageName }}</span>
       </div>
-      <div class="w-full flex justify-center">
+      <div class="w-full flex justify-center items-center mt-4 min-h-20">
         <!-- <button @click="clearStratagemPlay()">
           clearStratagemPlay
         </button> -->
@@ -231,6 +258,31 @@ function setupStage() {
         <audio v-show="false" ref="pressAudioRef" src="/data/Sounds/press.mp3" />
         <audio v-show="false" ref="finishAudioRef" src="/data/Sounds/finishMove.mp3" />
       </div>
+      <div class="w-full h-10 bg-primary mt-4" />
+      <button v-if="colectionMeasureTime && colectionMeasureTime.length > 0">
+        X Clear
+      </button>
+      <div class="w-[400px] h-[260px] overflow-auto mt-4">
+        <TransitionGroup name="list-b" tag="ul" class="flex flex-col-reverse text-xs">
+          <li
+            v-for="(mesureItem, i) in colectionMeasureTime" :key="`${mesureItem.createdAt}_${i}`"
+            class="flex"
+          >
+            <div class="w-2/5 text-primary text-center">
+              {{ mesureItem.stratagemName }}
+            </div>
+            <div class="w-1/5 text-center">
+              {{ mesureItem.time }} Sec
+            </div>
+            <div class="w-2/5 text-center">
+              {{ mesureItem.createdAt }}
+            </div>
+          </li>
+        </TransitionGroup>
+      </div>
+      <!-- <div class="w-[360px] h-[260px] overflow-auto mt-4">
+        <a class="twitter-timeline" href="https://twitter.com/helldivers2?ref_src=twsrc%5Etfw">Tweets by helldivers2</a>
+      </div> -->
       <!-- <ArrowJoystick movement-list-setup="URLD" /> -->
     </div>
   </div>

@@ -14,6 +14,9 @@
     "postinstall": "nuxi prepare",
     "generate": "nuxi generate"
   },
+  "dependencies": {
+    "radix-vue": "^1.6.1"
+  },
   "devDependencies": {
     "@antfu/eslint-config": "^2.11.0",
     "@nuxt/devtools": "^1.1.4",

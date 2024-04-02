@@ -9,6 +9,12 @@ export default defineNuxtConfig({
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
       ],
+      script: [
+        {
+          async: true,
+          src: 'https://platform.twitter.com/widgets.js',
+        },
+      ],
     },
   },
 
