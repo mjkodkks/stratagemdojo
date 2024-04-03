@@ -260,8 +260,8 @@ function endMeasureStat() {
           clearStratagemPlay
         </button> -->
         <ArrowJoystick :movement-list-setup="currentKeyList" :key-binding="keyBinding" />
-        <audio v-show="false" ref="pressAudioRef" :src="`${baseURL}/data/sounds/press.mp3`" />
-        <audio v-show="false" ref="finishAudioRef" :src="`${baseURL}/data/sounds/finishMove.mp3`" />
+        <audio v-show="false" ref="pressAudioRef" :src="`${baseURL}/data/Sounds/press.mp3`" />
+        <audio v-show="false" ref="finishAudioRef" :src="`${baseURL}/data/Sounds/finishMove.mp3`" />
       </div>
       <div class="w-full h-10 bg-primary mt-4" />
       <button v-if="colectionMeasureTime && colectionMeasureTime.length > 0" @click="colectionMeasureTime = []">
