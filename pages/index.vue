@@ -234,7 +234,7 @@ function endMeasureStat() {
             width="64px"
             height="64px"
             :icon-name="stratagem.image"
-            :root-icon="`${baseURL}/data/images/Stratagem_Icons/`"
+            :root-icon="`${baseURL}/data/images/stratagem_icons/`"
             class="transition-all trasnitionanimation-duration-150 cursor-pointer" :class="[stratagem.isActive ? 'outline outline-2' : '']"
             @click="toggleStratagem(stratagem)"
           />
@@ -247,7 +247,7 @@ function endMeasureStat() {
         <StratagemIcon
           v-for="stratagem in stratagemsPlayable" :key="stratagem.name"
           :icon-name="stratagem.image" width="150px"
-          :root-icon="`${baseURL}/data/images/Stratagem_Icons/`"
+          :root-icon="`${baseURL}/data/images/stratagem_icons/`"
           class="first:ring-offset-2 first:ring-2 first:ring-primary first:border-primary transition-all trasnitionanimation-duration-150"
           height="auto"
         />
@@ -260,8 +260,8 @@ function endMeasureStat() {
           clearStratagemPlay
         </button> -->
         <ArrowJoystick :movement-list-setup="currentKeyList" :key-binding="keyBinding" />
-        <audio v-show="false" ref="pressAudioRef" :src="`${baseURL}/data/Sounds/press.mp3`" />
-        <audio v-show="false" ref="finishAudioRef" :src="`${baseURL}/data/Sounds/finishMove.mp3`" />
+        <audio v-show="false" ref="pressAudioRef" :src="`${baseURL}/data/sounds/press.mp3`" />
+        <audio v-show="false" ref="finishAudioRef" :src="`${baseURL}/data/sounds/finishMove.mp3`" />
       </div>
       <div class="w-full h-10 bg-primary mt-4" />
       <button v-if="colectionMeasureTime && colectionMeasureTime.length > 0" @click="colectionMeasureTime = []">

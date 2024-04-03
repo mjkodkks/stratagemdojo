@@ -3,7 +3,7 @@ import type { ImageType } from '@/types/icons'
 
 withDefaults(defineProps<Props>(), {
   iconName: 'anti-materiel_rifle.svg',
-  rootIcon: `/data/images/Stratagem_Icons/`,
+  rootIcon: `/data/images/stratagem_icons/`,
   width: '16px',
   height: '16px',
 })
