@@ -3,7 +3,7 @@ import type { ImageType } from '@/types/icons'
 
 withDefaults(defineProps<Props>(), {
   iconName: 'anti-materiel_rifle.svg',
-  rootIcon: `/data/images/stratagem_icons/`,
+  rootIcon: `/data/Images/Stratagem_Icons/`,
   width: '16px',
   height: '16px',
 })
@@ -23,7 +23,7 @@ function getImageUrl(rootIcon: string, iconName: string) {
 
 <template>
   <div class="border-blue-300 border" :style="{ width, height }">
-    <img :src="getImageUrl(rootIcon, iconName)" :alt="getImageUrl(`${baseURL}/data/images/`, 'helldivers2Icon.jpeg')" width="100%" height="100%" lazy>
+    <img :src="getImageUrl(rootIcon, iconName)" :alt="getImageUrl(`${baseURL}/data/Images/`, 'helldivers2Icon.jpeg')" width="100%" height="100%" lazy>
   </div>
 </template>
 

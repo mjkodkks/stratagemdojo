@@ -234,7 +234,7 @@ function endMeasureStat() {
             width="64px"
             height="64px"
             :icon-name="stratagem.image"
-            :root-icon="`${baseURL}/data/images/stratagem_icons/`"
+            :root-icon="`${baseURL}/data/Images/Stratagem_Icons/`"
             class="transition-all trasnitionanimation-duration-150 cursor-pointer" :class="[stratagem.isActive ? 'outline outline-2' : '']"
             @click="toggleStratagem(stratagem)"
           />
@@ -247,7 +247,7 @@ function endMeasureStat() {
         <StratagemIcon
           v-for="stratagem in stratagemsPlayable" :key="stratagem.name"
           :icon-name="stratagem.image" width="150px"
-          :root-icon="`${baseURL}/data/images/stratagem_icons/`"
+          :root-icon="`${baseURL}/data/Images/Stratagem_Icons/`"
           class="first:ring-offset-2 first:ring-2 first:ring-primary first:border-primary transition-all trasnitionanimation-duration-150"
           height="auto"
         />
