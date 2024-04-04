@@ -1,11 +1,13 @@
 <script setup>
+const runtimeConfig = useRuntimeConfig()
+const baseURL = runtimeConfig.app.baseURL
 useHead({
-  title: 'Nuxt 3 Vitesse DKKs',
+  title: 'Stratagem Dojo',
   link: [
     {
       rel: 'icon',
       type: 'image/png',
-      href: '/nuxt.png',
+      href: `${baseURL}/nuxt.png`,
     },
   ],
 })
